@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metro Ticket Vending Machine</title>
+    <style>
+        body {
+            background-image: url('metro_background.jpg'); /* Replace 'metro_background.jpg' with your image file */
+            background-size: cover;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #ticketMachine {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        label {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        select, input {
+            padding: 8px;
+            margin: 5px;
+            font-size: 20px;
+        }
+
+        label:hover, option:hover {
+            background-color: #f8d56b; /* You can customize the highlight color */
+        }
+    </style>
+</head>
+<body>
+
+<div id="ticketMachine">
+    <h2>Metro Ticket Vending Machine</h2>
+    
+    <label for="ticketType">Select Ticket Type:</label>
+    <select id="ticketType">
+        <option value="single">Single Journey - $5</option>
+        <option value="return">Return Journey - $8</option>
+    </select>
+    
+    <label for="quantity">Quantity:</label>
+    <input type="number" id="quantity" min="1" value="1">
+
+    <label for="dateTime">Select Date and Time:</label>
+    <input type="datetime-local" id="dateTime">
+
+    <button onclick="purchaseTicket()">Purchase Ticket</button>
+
+    <div id="result"></div>
+
+    <!-- Added voice chat button -->
+    <button onclick="startVoiceChat()">Start Voice Chat</button>
+
+    <script>
+        function purchaseTicket() {
+            var ticketType = document.getElementById('ticketType').value;
+            var quantity = document.getElementById('quantity').value;
+            var dateTime = document.getElementById('dateTime').value;
+
+            // Perform necessary calculations and logic
+            var totalPrice = calculatePrice(ticketType, quantity);
+
+            document.getElementById('result').innerHTML = 'Ticket purchased successfully!<br>' +
+                'Type: ' + ticketType + '<br>' +
+                'Quantity: ' + quantity + '<br>' +
+                'Date and Time: ' + dateTime + '<br>' +
+                'Total Price: $' + totalPrice;
+        }
+
+        function calculatePrice(ticketType, quantity) {
+            var price = 0;
+            if (ticketType === 'single') {
+                price = 5;
+            } else if (ticketType === 'return') {
+                price = 8;
+            }
+            return price * quantity;
+        }
+
+        function startVoiceChat() {
+            try {
+                var recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+
+                recognition.start();
+
+                recognition.onresult = function(event) {
+                    var speechResult = event.results[0][0].transcript;
+                    console.log('Speech Result:', speechResult);
+
+                    if (speechResult.toLowerCase().includes('single')) {
+                        document.getElementById('ticketType').value = 'single';
+                    } else if (speechResult.toLowerCase().includes('return')) {
+                        document.getElementById('ticketType').value = 'return';
+                    }
+
+                    purchaseTicket();
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech Recognition Error:', event.error);
+                };
+            } catch (error) {
+                console.error('Error initializing speech recognition:', error);
+            }
+        }
+    </script>
+</div>
+
+</body>
+</html>
